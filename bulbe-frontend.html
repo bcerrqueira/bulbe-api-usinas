@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bulbe Energia — Painel de Usinas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ═══════════════════════════════════════════
+       DESIGN TOKENS — identidade Bulbe Energia
+    ═══════════════════════════════════════════ */
+    :root {
+      --blue:         #003366;
+      --blue-dark:    #001f40;
+      --blue-mid:     #1a4d80;
+      --blue-light:   #e8eef5;
+      --blue-xlight:  #f0f4f8;
+      --yellow:       #FFCC00;
+      --yellow-dark:  #e6b800;
+      --green:        #27ae60;
+      --green-light:  #e8f5e9;
+      --red:          #c0392b;
+      --red-light:    #fdecea;
+      --orange:       #e67e22;
+      --orange-light: #fff3cd;
+      --text:         #1a1a1a;
+      --text-muted:   #5a6a7a;
+      --border:       #d8e2ec;
+      --bg:           #eef1f5;
+      --white:        #ffffff;
+      --radius-sm:    6px;
+      --radius:       10px;
+      --radius-lg:    14px;
+      --shadow-sm:    0 1px 4px rgba(0,51,102,0.08);
+      --shadow:       0 4px 16px rgba(0,51,102,0.10);
+      --shadow-lg:    0 8px 32px rgba(0,51,102,0.14);
+      --font-display: 'Barlow Condensed', sans-serif;
+      --font-body:    'Barlow', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    /* ═══════════════════════════════════════════
+       HEADER
+    ═══════════════════════════════════════════ */
+    .header {
+      background: var(--blue);
+      padding: 0 40px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      border-bottom: 4px solid var(--yellow);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+    }
+
+    .logo-mark {
+      width: 38px;
+      height: 38px;
+      background: var(--yellow);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .logo-mark svg { display: block; }
+
+    .logo-name {
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: 22px;
+      color: var(--white);
+      letter-spacing: 0.5px;
+      line-height: 1;
+    }
+
+    .logo-name span { color: var(--yellow); }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .api-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 20px;
+      padding: 5px 14px 5px 10px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.75);
+      font-family: 'Consolas', monospace;
+    }
+
+    .api-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    .api-dot.offline { background: var(--red); animation: none; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .header-badge {
+      background: var(--yellow);
+      color: var(--blue);
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: var(--radius-sm);
+    }
+
+    /* ═══════════════════════════════════════════
+       PAGE LAYOUT
+    ═══════════════════════════════════════════ */
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 36px 32px 60px;
+    }
+
+    /* ═══════════════════════════════════════════
+       PAGE HERO
+    ═══════════════════════════════════════════ */
+    .page-hero {
+      margin-bottom: 32px;
+    }
+
+    .page-eyebrow {
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .page-hero h1 {
+      font-family: var(--font-display);
+      font-size: 42px;
+      font-weight: 900;
+      color: var(--blue);
+      line-height: 1;
+      border-left: 10px solid var(--yellow);
+      padding-left: 18px;
+      margin-bottom: 10px;
+    }
+
+    .page-hero p {
+      color: var(--text-muted);
+      font-size: 14px;
+      padding-left: 28px;
+    }
+
+    /* ═══════════════════════════════════════════
+       STATS ROW
+    ═══════════════════════════════════════════ */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 20px 22px;
+      border-top: 5px solid var(--blue);
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .stat-card:hover {
+      box-shadow: var(--shadow);
+      transform: translateY(-2px);
+    }
+
+    .stat-card.yellow { border-top-color: var(--yellow); }
+    .stat-card.green  { border-top-color: var(--green);  }
+    .stat-card.orange { border-top-color: var(--orange); }
+
+    .stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: 38px;
+      font-weight: 900;
+      color: var(--blue);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ═══════════════════════════════════════════
+       MAIN GRID
+    ═══════════════════════════════════════════ */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    /* ═══════════════════════════════════════════
+       CARD
+    ═══════════════════════════════════════════ */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--blue-xlight);
+    }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--blue);
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-title-dot {
+      width: 8px; height: 8px;
+      background: var(--yellow);
+      border-radius: 2px;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .card-body { padding: 24px; }
+
+    /* ═══════════════════════════════════════════
+       TOOLBAR (filtro + botão)
+    ═══════════════════════════════════════════ */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-refresh {
+      background: none;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 6px 14px;
+      font-size: 13px;
+      font-family: var(--font-body);
+      font-weight: 600;
+      color: var(--blue);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+
+    .btn-refresh:hover {
+      background: var(--blue-light);
+      border-color: var(--blue);
+    }
+
+    .btn-refresh.loading svg { animation: spin 0.8s linear infinite; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .filter-select {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-size: 13px;
+      font-family: var(--font-body);
+      color: var(--text);
+      background: var(--white);
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+
+    .filter-select:focus { border-color: var(--blue); }
+
+    /* ═══════════════════════════════════════════
+       TABLE
+    ═══════════════════════════════════════════ */
+    .table-wrap { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    thead tr {
+      background: var(--blue-xlight);
+      border-bottom: 2px solid var(--border);
+    }
+
+    th {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      padding: 10px 16px;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 13px 16px;
+      border-bottom: 1px solid #f0f3f7;
+      vertical-align: middle;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    tbody tr {
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    tbody tr:hover td { background: var(--blue-xlight); }
+    tbody tr.selected td { background: #e8eef5; }
+
+    .usina-nome {
+      font-weight: 600;
+      color: var(--blue);
+    }
+
+    /* TIPO BADGE */
+    .tipo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .tipo-solar         { background: #fff8e1; color: #7d5a00; }
+    .tipo-eolica        { background: #e3f2fd; color: #0d3b6e; }
+    .tipo-hidreletrica  { background: #e8f5e9; color: #1a5c32; }
+    .tipo-biomassa      { background: #fce4ec; color: #7b1a3a; }
+
+    /* STATUS BADGE */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .status-ativa       { background: var(--green-light);  color: #1a5c32; }
+    .status-ativa       .status-dot { background: var(--green); }
+    .status-manutencao  { background: var(--orange-light); color: #7d4e00; }
+    .status-manutencao  .status-dot { background: var(--orange); }
+    .status-inativa     { background: var(--red-light);    color: #7b1a1a; }
+    .status-inativa     .status-dot { background: var(--red); }
+
+    .kw-val { font-weight: 600; }
+    .kw-unit { font-size: 11px; color: var(--text-muted); margin-left: 2px; }
+
+    .row-arrow {
+      color: var(--text-muted);
+      font-size: 16px;
+      transition: transform 0.15s, color 0.15s;
+    }
+
+    tbody tr:hover .row-arrow { transform: translateX(4px); color: var(--blue); }
+
+    /* ═══════════════════════════════════════════
+       EMPTY / LOADING / ERROR STATES
+    ═══════════════════════════════════════════ */
+    .state-row td {
+      text-align: center;
+      padding: 48px 20px;
+      color: var(--text-muted);
+    }
+
+    .state-spinner {
+      display: inline-block;
+      width: 20px; height: 20px;
+      border: 2.5px solid var(--border);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-bottom: 10px;
+    }
+
+    .state-icon {
+      font-size: 32px;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .state-msg { font-size: 14px; font-weight: 500; color: var(--text-muted); }
+    .state-msg.error { color: var(--red); }
+
+    /* ═══════════════════════════════════════════
+       DETALHE LATERAL
+    ═══════════════════════════════════════════ */
+    .detail-panel {
+      background: var(--blue);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-top: 16px;
+      color: var(--white);
+      display: none;
+      animation: fadeDown 0.2s ease;
+    }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .detail-panel.visible { display: block; }
+
+    .detail-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .detail-badge-id {
+      background: var(--yellow);
+      color: var(--blue);
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: 1px;
+      padding: 3px 10px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 6px;
+      display: inline-block;
+    }
+
+    .detail-nome {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--white);
+      line-height: 1.1;
+    }
+
+    .btn-close-detail {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: var(--white);
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      width: 28px; height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+
+    .btn-close-detail:hover { background: rgba(255,255,255,0.2); }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .detail-item {
+      background: rgba(255,255,255,0.08);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+    }
+
+    .detail-item-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 4px;
+    }
+
+    .detail-item-value {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .detail-item.full { grid-column: 1 / -1; }
+
+    /* ═══════════════════════════════════════════
+       FORMULÁRIO DE CADASTRO
+    ═══════════════════════════════════════════ */
+    .form-section-label {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--blue);
+      padding: 0 0 8px;
+      border-bottom: 2px solid var(--yellow);
+      margin-bottom: 18px;
+      display: inline-block;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--blue);
+      margin-bottom: 6px;
+    }
+
+    .form-group .required {
+      color: var(--red);
+      margin-left: 2px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-family: var(--font-body);
+      font-weight: 500;
+      color: var(--text);
+      background: var(--white);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      appearance: none;
+    }
+
+    .form-control:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(0,51,102,0.1);
+    }
+
+    .form-control.error {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(192,57,43,0.1);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .form-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .form-hint.form-error {
+      color: var(--red);
+      font-weight: 600;
+    }
+
+    /* PAYLOAD PREVIEW */
+    .payload-preview {
+      background: #1e1e2e;
+      border-left: 6px solid var(--yellow);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 12px;
+      color: #cdd6f4;
+      line-height: 1.9;
+      margin-bottom: 20px;
+      overflow-x: auto;
+    }
+
+    .pj-key   { color: #a6e3a1; }
+    .pj-str   { color: #f9e2af; }
+    .pj-num   { color: #89b4fa; }
+    .pj-null  { color: #6c7086; }
+    .pj-brace { color: #cdd6f4; }
+
+    /* SUBMIT BUTTON */
+    .btn-submit {
+      width: 100%;
+      padding: 13px;
+      background: var(--blue);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.15s, transform 0.1s;
+      text-transform: uppercase;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      background: var(--blue-mid);
+    }
+
+    .btn-submit:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    .btn-submit:disabled {
+      background: #8fa3b8;
+      cursor: not-allowed;
+    }
+
+    .btn-submit-hint {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .http-tag {
+      font-family: 'Consolas', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    .tag-post   { background: #2980b9; color: #fff; }
+    .tag-get    { background: var(--green); color: #fff; }
+    .tag-201    { background: var(--green-light); color: #1a5c32; }
+    .tag-400    { background: var(--red-light); color: #7b1a1a; }
+
+    /* ═══════════════════════════════════════════
+       TOAST NOTIFICATIONS
+    ═══════════════════════════════════════════ */
+    .toast-container {
+      position: fixed;
+      top: 80px;
+      right: 28px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .toast {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 18px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      font-size: 13px;
+      font-weight: 500;
+      max-width: 340px;
+      pointer-events: auto;
+      animation: toastIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(28px) scale(0.95); }
+      to   { opacity: 1; transform: translateX(0) scale(1); }
+    }
+
+    .toast-success {
+      background: var(--white);
+      border: 1.5px solid #b7e2c8;
+      border-left: 5px solid var(--green);
+      color: var(--text);
+    }
+
+    .toast-error {
+      background: var(--white);
+      border: 1.5px solid #f5c0b5;
+      border-left: 5px solid var(--red);
+      color: var(--text);
+    }
+
+    .toast-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+    .toast-body { flex: 1; }
+    .toast-title { font-weight: 700; margin-bottom: 2px; color: var(--text); }
+    .toast-msg { font-size: 12px; color: var(--text-muted); }
+
+    /* ═══════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════ */
+    .footer {
+      background: var(--blue);
+      border-top: 4px solid var(--yellow);
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 60px;
+    }
+
+    .footer-left {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.5px;
+    }
+
+    .footer-left strong { color: var(--yellow); }
+
+    .footer-endpoints {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ═══════════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════════ */
+    @media (max-width: 900px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .header    { padding: 0 20px; }
+      .page      { padding: 24px 20px 48px; }
+      .header-badge { display: none; }
+    }
+
+    @media (max-width: 560px) {
+      .stats-row    { grid-template-columns: 1fr 1fr; }
+      .form-row     { grid-template-columns: 1fr; }
+      .api-pill     { display: none; }
+      .detail-grid  { grid-template-columns: 1fr; }
+      .page-hero h1 { font-size: 30px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     HEADER
+═══════════════════════════════════ -->
+<header class="header">
+  <a href="#" class="logo">
+    <div class="logo-mark">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path d="M11 2 L14 9 H20 L15 13.5 L17 20 L11 16 L5 20 L7 13.5 L2 9 H8 Z" fill="#003366"/>
+      </svg>
+    </div>
+    <span class="logo-name">Bulbe <span>Energia</span></span>
+  </a>
+
+  <div class="header-right">
+    <div class="api-pill">
+      <span class="api-dot" id="api-dot"></span>
+      <span id="api-status-text">localhost:3000</span>
+    </div>
+    <span class="header-badge">Painel Admin</span>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════
+     PÁGINA
+═══════════════════════════════════ -->
+<main class="page">
+
+  <!-- HERO -->
+  <div class="page-hero">
+    <p class="page-eyebrow">■ Monitoramento de Infraestrutura</p>
+    <h1>Gestão de Usinas</h1>
+    <p>Visualize, cadastre e monitore todas as usinas de energia renovável do sistema Bulbe Energia.</p>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Total de Usinas</div>
+      <div class="stat-value" id="stat-total">—</div>
+      <div class="stat-sub" id="stat-total-sub">aguardando conexão</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Ativas</div>
+      <div class="stat-value" id="stat-ativas">—</div>
+      <div class="stat-sub">em operação</div>
+    </div>
+    <div class="stat-card orange">
+      <div class="stat-label">Manutenção</div>
+      <div class="stat-value" id="stat-manut">—</div>
+      <div class="stat-sub">em pausa</div>
+    </div>
+    <div class="stat-card yellow">
+      <div class="stat-label">Capacidade Total</div>
+      <div class="stat-value" id="stat-cap">—</div>
+      <div class="stat-sub" id="stat-cap-sub">kW instalados</div>
+    </div>
+  </div>
+
+  <!-- GRID PRINCIPAL -->
+  <div class="main-grid">
+
+    <!-- ══ COLUNA ESQUERDA: TABELA ══ -->
+    <div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">
+            <span class="card-title-dot"></span>
+            Usinas Cadastradas
+          </span>
+          <div class="toolbar">
+            <select class="filter-select" id="filter-status" onchange="aplicarFiltro()">
+              <option value="">Todos os status</option>
+              <option value="ativa">Ativas</option>
+              <option value="manutencao">Manutenção</option>
+              <option value="inativa">Inativas</option>
+            </select>
+            <button class="btn-refresh" id="btn-refresh" onclick="carregarUsinas()">
+              <svg id="refresh-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M13 7A6 6 0 1 1 7 1a6 6 0 0 1 4.95 2.62M13 1v3.5H9.5" stroke="#003366" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Atualizar
+            </button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:50px">ID</th>
+                <th>Nome da Usina</th>
+                <th>Tipo</th>
+                <th>Capacidade</th>
+                <th>Status</th>
+                <th style="width:32px"></th>
+              </tr>
+            </thead>
+            <tbody id="tabela-body">
+              <tr class="state-row">
+                <td colspan="6">
+                  <div class="state-spinner"></div>
+                  <div class="state-msg">Conectando à API...</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PAINEL DE DETALHE -->
+      <div class="detail-panel" id="detail-panel">
+        <div class="detail-header">
+          <div>
+            <span class="detail-badge-id" id="detail-id">—</span>
+            <div class="detail-nome" id="detail-nome">—</div>
+          </div>
+          <button class="btn-close-detail" onclick="fecharDetalhe()" title="Fechar">×</button>
+        </div>
+        <div class="detail-grid" id="detail-grid"></div>
+      </div>
+    </div>
+
+    <!-- ══ COLUNA DIREITA: FORMULÁRIO ══ -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">
+          <span class="card-title-dot"></span>
+          Cadastrar Usina
+        </span>
+        <span class="http-tag tag-post">POST</span>
+      </div>
+      <div class="card-body">
+
+        <span class="form-section-label">Dados da Usina</span>
+
+        <div class="form-group">
+          <label>Nome <span class="required">*</span></label>
+          <input class="form-control" type="text" id="f-nome" placeholder="Ex: Usina Solar Minas I" maxlength="100" oninput="atualizarPreview()">
+          <span class="form-hint form-error" id="err-nome" style="display:none">Campo obrigatório.</span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tipo <span class="required">*</span></label>
+            <select class="form-control" id="f-tipo" onchange="atualizarPreview()">
+              <option value="">Selecione...</option>
+              <option value="solar">☀ Solar</option>
+              <option value="eolica">💨 Eólica</option>
+              <option value="hidreletrica">💧 Hidrelétrica</option>
+              <option value="biomassa">🌿 Biomassa</option>
+            </select>
+            <span class="form-hint form-error" id="err-tipo" style="display:none">Campo obrigatório.</span>
+          </div>
+          <div class="form-group">
+            <label>Capacidade (kW)</label>
+            <input class="form-control" type="number" id="f-cap" placeholder="Ex: 5000" min="0" step="1" oninput="atualizarPreview()">
+            <span class="form-hint">Opcional</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Localização</label>
+          <input class="form-control" type="text" id="f-local" placeholder="Ex: Sete Lagoas, MG" oninput="atualizarPreview()">
+          <span class="form-hint">Opcional — cidade e estado</span>
+        </div>
+
+        <!-- PAYLOAD PREVIEW -->
+        <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:8px;">
+          ◆ Payload JSON (tempo real)
+        </p>
+        <div class="payload-preview" id="payload-preview">
+          <span class="pj-brace">{ }</span>
+        </div>
+
+        <button class="btn-submit" id="btn-submit" onclick="cadastrarUsina()">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+          Cadastrar Usina
+        </button>
+
+        <div class="btn-submit-hint">
+          <span>
+            <span class="http-tag tag-post" style="margin-right:4px">POST</span>
+            /api/v1/usinas
+          </span>
+          <span>
+            Sucesso:&nbsp;<span class="http-tag tag-201">201 Created</span>
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-left">
+    <strong>Bulbe Energia</strong> — Projeto de Desenvolvimento Backend · IBMEC
+  </div>
+  <div class="footer-endpoints">
+    <span class="http-tag tag-get">GET</span>
+    <span class="http-tag tag-post">POST</span>
+    <span style="font-family:monospace;font-size:11px;color:rgba(255,255,255,0.4)">/api/v1/usinas</span>
+  </div>
+</footer>
+
+<!-- TOASTS -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ══════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════ -->
+<script>
+  const BASE_URL = 'http://localhost:3000/api/v1/usinas';
+
+  // ── Mapas de dados ──────────────────────────────────────────────────────────
+  const TIPO_LABEL = { solar:'Solar', eolica:'Eólica', hidreletrica:'Hidrelétrica', biomassa:'Biomassa' };
+  const TIPO_ICON  = { solar:'☀', eolica:'💨', hidreletrica:'💧', biomassa:'🌿' };
+  const TIPO_CLASS = { solar:'tipo-solar', eolica:'tipo-eolica', hidreletrica:'tipo-hidreletrica', biomassa:'tipo-biomassa' };
+  const STATUS_LABEL = { ativa:'Ativa', manutencao:'Manutenção', inativa:'Inativa' };
+
+  // ── Estado ──────────────────────────────────────────────────────────────────
+  let todasUsinas = [];
+  let usinasSelecionada = null;
+
+  // ── CARREGAMENTO INICIAL ────────────────────────────────────────────────────
+  async function carregarUsinas() {
+    const btn  = document.getElementById('btn-refresh');
+    const icon = document.getElementById('refresh-icon');
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    setEstadoTabela('loading');
+    fecharDetalhe();
+
+    try {
+      const res = await fetch(BASE_URL);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      todasUsinas = await res.json();
+      renderTabela(todasUsinas);
+      atualizarStats(todasUsinas);
+      setApiStatus(true);
+    } catch (e) {
+      setEstadoTabela('error', 'Não foi possível conectar à API. Verifique se o servidor está rodando em localhost:3000.');
+      setApiStatus(false);
+    } finally {
+      btn.classList.remove('loading');
+      btn.disabled = false;
+    }
+  }
+
+  // ── RENDER TABELA ────────────────────────────────────────────────────────────
+  function renderTabela(usinas) {
+    const tbody = document.getElementById('tabela-body');
+
+    if (!usinas.length) {
+      setEstadoTabela('empty', 'Nenhuma usina encontrada.');
+      return;
+    }
+
+    tbody.innerHTML = usinas.map(u => `
+      <tr onclick="verDetalhe(${u.id})" ${usinasSelecionada === u.id ? 'class="selected"' : ''}>
+        <td style="font-weight:600;color:var(--text-muted);font-size:13px">#${u.id}</td>
+        <td><span class="usina-nome">${escHtml(u.nome)}</span></td>
+        <td>
+          <span class="tipo-badge ${TIPO_CLASS[u.tipo] || ''}">
+            ${TIPO_ICON[u.tipo] || ''} ${TIPO_LABEL[u.tipo] || u.tipo}
+          </span>
+        </td>
+        <td>
+          ${u.capacidade_kw != null
+            ? `<span class="kw-val">${u.capacidade_kw.toLocaleString('pt-BR')}</span><span class="kw-unit">kW</span>`
+            : `<span style="color:var(--text-muted);font-size:13px">—</span>`}
+        </td>
+        <td>
+          <span class="status-badge status-${u.status || 'inativa'}">
+            <span class="status-dot"></span>
+            ${STATUS_LABEL[u.status] || u.status}
+          </span>
+        </td>
+        <td><span class="row-arrow">›</span></td>
+      </tr>
+    `).join('');
+  }
+
+  // ── FILTRO ───────────────────────────────────────────────────────────────────
+  function aplicarFiltro() {
+    const filtro = document.getElementById('filter-status').value;
+    const filtradas = filtro ? todasUsinas.filter(u => u.status === filtro) : todasUsinas;
+    renderTabela(filtradas);
+    fecharDetalhe();
+  }
+
+  // ── STATS ────────────────────────────────────────────────────────────────────
+  function atualizarStats(usinas) {
+    document.getElementById('stat-total').textContent = usinas.length;
+    document.getElementById('stat-total-sub').textContent = usinas.length === 1 ? 'usina cadastrada' : 'usinas cadastradas';
+    document.getElementById('stat-ativas').textContent = usinas.filter(u => u.status === 'ativa').length;
+    document.getElementById('stat-manut').textContent  = usinas.filter(u => u.status === 'manutencao').length;
+
+    const total = usinas.reduce((s, u) => s + (u.capacidade_kw || 0), 0);
+    if (total >= 1000000) {
+      document.getElementById('stat-cap').textContent = (total / 1000000).toFixed(1) + ' GW';
+    } else if (total >= 1000) {
+      document.getElementById('stat-cap').textContent = (total / 1000).toFixed(0) + ' MW';
+    } else {
+      document.getElementById('stat-cap').textContent = total.toLocaleString('pt-BR');
+    }
+  }
+
+  // ── DETALHE ──────────────────────────────────────────────────────────────────
+  async function verDetalhe(id) {
+    usinasSelecionada = id;
+    // Highlight na tabela
+    document.querySelectorAll('#tabela-body tr').forEach(tr => tr.classList.remove('selected'));
+    event.currentTarget && event.currentTarget.classList.add('selected');
+
+    try {
+      const res = await fetch(`${BASE_URL}/${id}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const u = await res.json();
+
+      document.getElementById('detail-id').textContent  = `ID #${u.id}`;
+      document.getElementById('detail-nome').textContent = u.nome;
+
+      document.getElementById('detail-grid').innerHTML = `
+        <div class="detail-item">
+          <div class="detail-item-label">Tipo</div>
+          <div class="detail-item-value">${TIPO_ICON[u.tipo] || ''} ${TIPO_LABEL[u.tipo] || u.tipo}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-item-label">Status</div>
+          <div class="detail-item-value">${STATUS_LABEL[u.status] || u.status}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-item-label">Capacidade</div>
+          <div class="detail-item-value">${u.capacidade_kw != null ? u.capacidade_kw.toLocaleString('pt-BR') + ' kW' : '—'}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-item-label">Localização</div>
+          <div class="detail-item-value">${escHtml(u.localizacao || '—')}</div>
+        </div>
+        <div class="detail-item full" style="background:rgba(255,204,0,0.12);border:1px solid rgba(255,204,0,0.25)">
+          <div class="detail-item-label">Endpoint consultado</div>
+          <div class="detail-item-value" style="font-family:monospace;font-size:13px">
+            <span style="background:var(--green);color:#fff;padding:1px 6px;border-radius:3px;font-size:10px;margin-right:6px">GET</span>
+            /api/v1/usinas/${u.id} → 200 OK
+          </div>
+        </div>
+      `;
+
+      document.getElementById('detail-panel').classList.add('visible');
+      document.getElementById('detail-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } catch (e) {
+      toast('Erro ao buscar detalhes da usina #' + id, 'error', 'Verifique se a API está disponível.');
+    }
+  }
+
+  function fecharDetalhe() {
+    document.getElementById('detail-panel').classList.remove('visible');
+    usinasSelecionada = null;
+    document.querySelectorAll('#tabela-body tr').forEach(tr => tr.classList.remove('selected'));
+  }
+
+  // ── CADASTRAR ────────────────────────────────────────────────────────────────
+  async function cadastrarUsina() {
+    const nome  = document.getElementById('f-nome').value.trim();
+    const tipo  = document.getElementById('f-tipo').value;
+    const cap   = document.getElementById('f-cap').value;
+    const local = document.getElementById('f-local').value.trim();
+
+    // Limpar erros anteriores
+    ['f-nome','f-tipo'].forEach(id => {
+      document.getElementById(id).classList.remove('error');
+    });
+    document.getElementById('err-nome').style.display = 'none';
+    document.getElementById('err-tipo').style.display = 'none';
+
+    // Validação client-side (espelhando critérios de aceite da US-API-03)
+    let valido = true;
+    if (!nome) {
+      document.getElementById('f-nome').classList.add('error');
+      document.getElementById('err-nome').style.display = 'block';
+      valido = false;
+    }
+    if (!tipo) {
+      document.getElementById('f-tipo').classList.add('error');
+      document.getElementById('err-tipo').style.display = 'block';
+      valido = false;
+    }
+    if (!valido) return;
+
+    const payload = { nome, tipo };
+    if (cap)   payload.capacidade_kw = Number(cap);
+    if (local) payload.localizacao   = local;
+
+    const btn = document.getElementById('btn-submit');
+    btn.disabled = true;
+    btn.innerHTML = '<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite"></span> Enviando...';
+
+    try {
+      const res = await fetch(BASE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+
+      if (res.status === 201) {
+        toast('Usina cadastrada com sucesso!', 'success', `"${data.nome}" registrada com ID #${data.id}`);
+        // Limpar form
+        ['f-nome','f-cap','f-local'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('f-tipo').value = '';
+        atualizarPreview();
+        carregarUsinas();
+      } else {
+        toast('Erro ao cadastrar', 'error', data.erro || `Status ${res.status}`);
+      }
+    } catch (e) {
+      toast('Falha de conexão', 'error', 'Verifique se a API está rodando em localhost:3000.');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        Cadastrar Usina`;
+    }
+  }
+
+  // ── PREVIEW JSON ─────────────────────────────────────────────────────────────
+  function atualizarPreview() {
+    const nome  = document.getElementById('f-nome').value.trim();
+    const tipo  = document.getElementById('f-tipo').value;
+    const cap   = document.getElementById('f-cap').value;
+    const local = document.getElementById('f-local').value.trim();
+
+    const campos = [];
+    if (nome)  campos.push(`  <span class="pj-key">"nome"</span>: <span class="pj-str">"${escHtml(nome)}"</span>`);
+    if (tipo)  campos.push(`  <span class="pj-key">"tipo"</span>: <span class="pj-str">"${tipo}"</span>`);
+    if (cap)   campos.push(`  <span class="pj-key">"capacidade_kw"</span>: <span class="pj-num">${Number(cap)}</span>`);
+    if (local) campos.push(`  <span class="pj-key">"localizacao"</span>: <span class="pj-str">"${escHtml(local)}"</span>`);
+
+    const html = campos.length
+      ? `<span class="pj-brace">{</span>\n${campos.join(',\n')}\n<span class="pj-brace">}</span>`
+      : `<span class="pj-null">// preencha os campos acima</span>`;
+
+    document.getElementById('payload-preview').innerHTML = html;
+  }
+
+  // ── ESTADOS DA TABELA ────────────────────────────────────────────────────────
+  function setEstadoTabela(tipo, msg) {
+    const tbody = document.getElementById('tabela-body');
+    const icons = { loading: '', empty: '📂', error: '⚠️' };
+    const icon  = icons[tipo] || '';
+    const cls   = tipo === 'error' ? 'error' : '';
+
+    if (tipo === 'loading') {
+      tbody.innerHTML = `
+        <tr class="state-row">
+          <td colspan="6">
+            <div class="state-spinner"></div>
+            <div class="state-msg">Buscando usinas...</div>
+          </td>
+        </tr>`;
+    } else {
+      tbody.innerHTML = `
+        <tr class="state-row">
+          <td colspan="6">
+            <span class="state-icon">${icon}</span>
+            <div class="state-msg ${cls}">${msg}</div>
+          </td>
+        </tr>`;
+    }
+  }
+
+  // ── API STATUS INDICATOR ─────────────────────────────────────────────────────
+  function setApiStatus(online) {
+    const dot  = document.getElementById('api-dot');
+    const text = document.getElementById('api-status-text');
+    if (online) {
+      dot.classList.remove('offline');
+      text.textContent = 'localhost:3000 · online';
+    } else {
+      dot.classList.add('offline');
+      text.textContent = 'localhost:3000 · offline';
+    }
+  }
+
+  // ── TOAST ────────────────────────────────────────────────────────────────────
+  function toast(title, tipo = 'success', msg = '') {
+    const container = document.getElementById('toast-container');
+    const el = document.createElement('div');
+    el.className = `toast toast-${tipo}`;
+    el.innerHTML = `
+      <span class="toast-icon">${tipo === 'success' ? '✓' : '✕'}</span>
+      <div class="toast-body">
+        <div class="toast-title">${title}</div>
+        ${msg ? `<div class="toast-msg">${msg}</div>` : ''}
+      </div>`;
+    container.appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  }
+
+  // ── HELPERS ──────────────────────────────────────────────────────────────────
+  function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // Enter no nome submete o form
+  document.getElementById('f-nome').addEventListener('keydown', e => { if (e.key === 'Enter') cadastrarUsina(); });
+
+  // ── INICIALIZAÇÃO ─────────────────────────────────────────────────────────────
+  carregarUsinas();
+</script>
+</body>
+</html>

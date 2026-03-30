@@ -1,0 +1,17 @@
+{
+  "name": "bulbe-api-usinas",
+  "version": "1.0.0",
+  "description": "API de usinas para o sistema Bulbe Energia",
+  "type": "module",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
