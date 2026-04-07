@@ -37,7 +37,12 @@ export const buscarUsinaPorId = (req, res) => {
 // ── Criar uma nova usina ──────────────────────────────────────────────────────
 // Corresponde à US-API-03
 export const criarUsina = (req, res) => {
-  // Extrai os dados do corpo da requisição
+  if (!req.body || Object.keys(req.body).length === 0) {
+    return res.status(400).json({
+      erro: 'Corpo da requisição não enviado ou inválido.'
+    });
+  }
+
   const { nome, tipo, capacidade_kw, localizacao } = req.body;
 
   // ── Validação: campos obrigatórios ──────────────────────────────────────────
@@ -73,3 +78,4 @@ export const criarUsina = (req, res) => {
   // RFC 9110: 201 Created indica que a requisição resultou na criação de um recurso
   res.status(201).json(novaUsina);
 };
+
